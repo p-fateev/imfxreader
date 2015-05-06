@@ -15,23 +15,25 @@ class ImfxReader
 
 			$this->_renderHeader();		
 			$this->_renderUploadForm();		
+			$extractor = $this->getDataExtractor();
 
 			for ($i=0; $i < count($_FILES['files']['name']); $i++) { 
 				if ($_FILES['files']['error'][$i] == 0 and $_FILES['files']['size'][$i] > 0) {
-					$msg = new ImfxMessage($_FILES['files']['name'][$i], $_FILES['files']['tmp_name'][$i]);
-					$msg->render();	
+					$message = new ImfxMessage(
+						$_FILES['files']['name'][$i], 
+						$_FILES['files']['tmp_name'][$i], 
+						$extractor);
+					$message->render();	
 				}				
 			}			
-
 
 			//var_dump($_SESSION);
 
 		} elseif (isset($_GET['msg']) and isset($_GET['doc'])) {
-			$storage = new SessionDataStorage();
-			if ($data = $storage->getDocument($_GET['msg'], $_GET['doc'])) {
-				//var_dump($document);
-				//$data['document']->render();	
-				$view = DocumentView::factory($data);
+			$storage = $this->getDataStorage();
+			if ($document = $storage->getDocument($_GET['msg'], $_GET['doc'])) {				
+				
+				$view = DocumentView::factory($document);
 				$view->render();
 				exit;
 			} 
@@ -45,6 +47,19 @@ class ImfxReader
 		$this->_renderFooter();	
 
 		//echo "</pre>";
+	}
+
+	public function getDataStorage()
+	{
+		/* в зависимости от настроек создаем класс для промежуточного хранения данных */
+		defined('STORAGE_TYPE') || define('STORAGE_TYPE', IDataStorage::SESSION_STORAGE);
+		$storageClass = STORAGE_TYPE == IDataStorage::SESSION_STORAGE ? 'SessionDataStorage' : 'FilesDataStorage';
+		return new $storageClass();
+	}
+
+	public function getDataExtractor()
+	{
+		return new ZipXmlDataExtractor($this->getDataStorage());
 	}
 
 	private function _renderUploadForm()

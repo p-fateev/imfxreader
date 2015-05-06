@@ -34,8 +34,7 @@ class ImfxDocument
 		$this->_number = $number;
 		$this->_fileName = $fileName;
 		$this->_rawData = $rawData;
-		$this->_id = md5($code.$number.$fileName);
-		//$this->_attachments = array();
+		$this->_id = md5($code.$number.$fileName);		
 	}
 
 	static public function getDocTypeName($docType)

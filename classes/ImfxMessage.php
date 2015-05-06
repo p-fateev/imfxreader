@@ -12,16 +12,14 @@ class ImfxMessage
 	private $_documents;
 	private $_errors;	
 
-	function __construct($fileName, $archivePath)
-	{
-		//print $filePath;
+	function __construct($fileName, $archivePath, DataExtractor $extractor)
+	{		
 		$this->_fileName = $fileName;
 		$this->_id = md5($fileName);
 		$this->_archivePath = $archivePath;
 
-		$this->_extractor = new ZipXmlDataExtractor($this);
-		$this->_documents = $this->_extractor->getDocuments();
-		//var_dump($this->_documents);
+		$this->_extractor = $extractor;
+		$this->_documents = $this->_extractor->getDocuments($this);		
 	}	
 
 	public function getId()

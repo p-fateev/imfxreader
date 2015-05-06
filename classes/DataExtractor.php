@@ -4,16 +4,18 @@
 * 
 */
 abstract class DataExtractor
-{
-
-	protected $_imfxMessage;
+{	
+	//protected $_imfxMessage;
 	protected $_storage;
 	
-	function __construct(ImfxMessage &$imfxMessage)
+	function __construct(IDataStorage $storage)
 	{
-		$this->_imfxMessage = $imfxMessage;
-		$this->_storage = new SessionDataStorage();
+		//$this->_imfxMessage = $imfxMessage;
+		$this->_storage = $storage;
+		
 		$this->_storage->clear();
 	}
+
+	abstract public function getDocuments(ImfxMessage &$imfxMessage);
 		
 }

@@ -5,12 +5,12 @@
 */
 class ZipXmlDataExtractor extends DataExtractor
 {
-	public function getDocuments()
+	public function getDocuments(ImfxMessage &$imfxMessage)
 	{
 		//$documents = array();
 		$zipArchive = new ZipArchive(); 
 
-		if ($zipArchive->open($this->_imfxMessage->getArchivePath())) {
+		if ($zipArchive->open($imfxMessage->getArchivePath())) {
 			//var_dump($zipArchive);
 
 			/* ищем список документов */
@@ -22,16 +22,16 @@ class ZipXmlDataExtractor extends DataExtractor
 			}
 
 			if ($listFileName) {
-				return $this->_extractDocuments($zipArchive, $listFileName);
+				return $this->_extractDocuments($zipArchive, $imfxMessage, $listFileName);
 
 			} else {
-				$this->_imfxMessage->setError('Не обнаружен список документов!');	
+				$imfxMessage->setError('Не обнаружен список документов!');	
 			}								
 
 			$zipArchive->close();
 			
 		} else {			
-			$_imfxMessage->setError('Не удалось открыть архив!');	
+			$imfxMessage->setError('Не удалось открыть архив!');	
 		}
 
 		return array();
@@ -48,7 +48,7 @@ class ZipXmlDataExtractor extends DataExtractor
 		}
 	}
 
-	private function _extractDocuments(&$archive, $listFileName)
+	private function _extractDocuments(&$archive, &$imfxMessage, $listFileName)
 	{
 		$documents = array();
 
@@ -62,7 +62,7 @@ class ZipXmlDataExtractor extends DataExtractor
 					$docClass = $docCode == ImfxDocument::DOC_TYPE_IMAGE ? 'ComplexImfxDocument' : 'ImfxDocument';					
 					
 					$document = new $docClass(
-						$this->_imfxMessage->getId(),
+						$imfxMessage->getId(),
 						$docCode, 
 						sprintf('%s № %s', ImfxDocument::getDocTypeName($docCode), (string) $node->DocNumber), 
 						(string) $node->FileName,
@@ -74,7 +74,7 @@ class ZipXmlDataExtractor extends DataExtractor
 						if ($attNodes = $xmlElem->xpath('img_page')) {
 							foreach ($attNodes as $node) {
 								$attachment = new ImfxDocument(
-									$this->_imfxMessage->getId(),
+									$imfxMessage->getId(),
 									$docCode, 
 									sprintf('Файл № %s', (string) $node->page_num), 
 									(string) $node->page_file_name,
@@ -90,11 +90,11 @@ class ZipXmlDataExtractor extends DataExtractor
 					$documents[] = $document;
 				}
 			} else {
-				$this->_imfxMessage->setError('Не удалось извлечь список документов!');	
+				$imfxMessage->setError('Не удалось извлечь список документов!');	
 			}	
 
 		} else {
-			$this->_imfxMessage->setError('Не удалось открыть список документов!');	
+			$imfxMessage->setError('Не удалось открыть список документов!');	
 		}
 
 		return $documents;
