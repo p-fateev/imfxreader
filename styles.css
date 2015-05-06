@@ -1,0 +1,28 @@
+body {
+	width: 70%;
+	margin: 20px auto;
+}
+
+form {
+	width: 50%;
+	text-align: center;
+	border: solid 1px silver;
+	margin: 20px auto;	
+	padding: 15px;
+	background: #eee;
+}
+
+dl {
+	border: solid 1px silver;
+}
+
+dt {
+	padding: 10px 30px;
+	font-weight: bold;
+	border-bottom: solid 1px silver;
+	background: #eee;
+}
+
+ul.errors {
+	color: red;
+}
